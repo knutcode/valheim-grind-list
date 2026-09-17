@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valheim Grind List</title>
+<meta name="description" content="Mistwalker + Feather Cape grind tracker">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x2694;&#xFE0F;</text></svg>">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-card: #161d27;
+    --bg-item: #1c2531;
+    --border: #2b3947;
+    --text: #dce6f0;
+    --text-dim: #8a9bb0;
+    --accent: #4fd1c5;
+    --accent-dim: #2c7a73;
+    --gold: #e3b341;
+    --done: #3fb950;
+    --danger: #f85149;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+    padding: 16px;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  header { text-align: center; padding: 24px 0 8px; }
+  h1 {
+    font-size: 1.7rem;
+    letter-spacing: 0.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .subtitle { color: var(--text-dim); font-size: 0.9rem; margin-top: 4px; }
+
+  .total-bar {
+    margin: 20px 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .total-bar .label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    background: var(--bg);
+    border-radius: 6px;
+    height: 12px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+    border-radius: 6px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .step {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .step.done { border-color: var(--done); }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .step-header:hover { background: var(--bg-item); }
+  .step-num {
+    background: var(--accent-dim);
+    color: var(--bg);
+    font-weight: 700;
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .step.done .step-num { background: var(--done); }
+  .step-title { font-weight: 600; flex: 1; }
+  .step-count { color: var(--text-dim); font-size: 0.8rem; white-space: nowrap; }
+  .chevron { color: var(--text-dim); transition: transform 0.2s; font-size: 0.8rem; }
+  .step.open .chevron { transform: rotate(90deg); }
+  .step-body { display: none; border-top: 1px solid var(--border); }
+  .step.open .step-body { display: block; }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: var(--bg-item); }
+  .item input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .item.checked .item-text { text-decoration: line-through; color: var(--text-dim); }
+  .item-text { font-size: 0.92rem; }
+  .item-note { display: block; color: var(--text-dim); font-size: 0.8rem; margin-top: 1px; }
+  .item.checked .item-note { text-decoration: line-through; }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .tag.craft { background: #2d333b; color: var(--gold); }
+  .tag.buy { background: #2d333b; color: #79c0ff; }
+  .tag.boss { background: #3d1d1f; color: var(--danger); }
+  .tag.build { background: #1f3327; color: var(--done); }
+
+  .reset-row { text-align: center; margin: 24px 0 40px; }
+  button.reset {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  button.reset:hover { border-color: var(--danger); color: var(--danger); }
+
+  footer { text-align: center; color: var(--text-dim); font-size: 0.75rem; padding-bottom: 24px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>&#x2694;&#xFE0F; Valheim Grind List</h1>
+  <div class="subtitle">Goal: Mistwalker + Feather Cape (+ Carapace Helmet)</div>
+</header>
+
+<div class="total-bar">
+  <div class="label"><span>Total progress</span><span id="totalCount">0 / 0</span></div>
+  <div class="progress-track"><div class="progress-fill" id="totalFill"></div></div>
+</div>
+
+<div id="steps"></div>
+
+<div class="reset-row">
+  <button class="reset" id="resetBtn">Reset all progress</button>
+</div>
+
+<footer>Progress is saved in your browser (localStorage)</footer>
+
+<script>
+const DATA = [
+  {
+    title: "Logistics loop",
+    items: [
+      { t: "Buy Thunderstone at Haldor", tag: "buy" },
+      { t: "Swamp: 10 guck" },
+      { t: "Swamp: 10 ancient bark" },
+      { t: "Swamp: 5 chains", n: "Wraiths / crypt chests. Skip if banked" },
+      { t: "Mountains: 40 obsidian", n: "For 200 frost arrows" },
+      { t: "Mountains: 10 freeze glands", n: "For 200 frost arrows" },
+      { t: "Mountains: 30 feathers", n: "20 for arrows, 10 for the Feather Cape" },
+      { t: "Craft Draugr Fang", n: "10 ancient bark, 20 silver, 2 deer hide, 10 guck", tag: "craft" },
+      { t: "Craft 200 frost arrows", n: "80 wood, 40 obsidian, 20 feathers, 10 freeze glands", tag: "craft" },
+      { t: "Craft Obliterator", n: "8 iron, 4 copper, 1 thunderstone", tag: "craft" },
+      { t: "Brew fire resist barley wine", n: "10 barley, 10 cloudberries", tag: "craft" },
+      { t: "Brew healing meads", tag: "craft" },
+      { t: "Spin 20 linen thread", n: "15 helmet, 5 axe" }
+    ]
+  },
+  {
+    title: "Plains outpost + early gear",
+    items: [
+      { t: "Boat haul: 30 iron, stone, surtling cores, bronze, copper, chains, 2 dragon tears, fine wood", n: "Iron: 10 blast furnace, 10 forge upgrades, 10 padded helmet" },
+      { t: "Build portal + workbench", tag: "build" },
+      { t: "Build artisan table", n: "10 wood, 2 dragon tears", tag: "build" },
+      { t: "Build blast furnace", n: "20 stone, 5 cores, 10 iron, 20 fine wood", tag: "build" },
+      { t: "Build charcoal kiln", n: "20 stone, 5 surtling cores", tag: "build" },
+      { t: "Upgrade forge to lvl 4", tag: "build" },
+      { t: "Raid fuling village: ~30 black metal scrap", n: "Smelt on site, grab totems that drop" },
+      { t: "Craft Black Metal Shield", n: "10 fine wood, 8 black metal, 5 chains", tag: "craft" },
+      { t: "Craft Padded Helmet", n: "10 iron, 15 linen thread", tag: "craft" },
+      { t: "Craft Black Metal Axe", n: "6 fine wood, 20 black metal, 5 linen thread", tag: "craft" }
+    ]
+  },
+  {
+    title: "Yagluth",
+    items: [
+      { t: "Collect 5 fuling totems" },
+      { t: "Top up to 63 black metal scrap total, smelt everything", n: "Axe 20, shield 8, Skoll & Hati 10, Galdr 10, refinery 5, extractors 10" },
+      { t: "Kill Yagluth", n: "Silver sword + BM shield + frost arrows + fire resist wine", tag: "boss" },
+      { t: "Take Yagluth power", n: "Elemental resistance" },
+      { t: "Buy Torn Spirit at Haldor", tag: "buy" },
+      { t: "Build Wisp Fountain", n: "10 stone, 1 torn spirit", tag: "build" },
+      { t: "Craft Wisplight", n: "3 silver, 1 wisp", tag: "craft" },
+      { t: "Bank 3+ wisps", n: "Collect nightly at the fountain" }
+    ]
+  },
+  {
+    title: "Mistlands beachhead",
+    items: [
+      { t: "Sail: iron pickaxe, BM axe, portal mats, stonecutter, stone, wood, meads, 35 BM bars", n: "Plus 25 iron if banked, otherwise farm it there" },
+      { t: "Claim a dvergr guard tower as base, portal home", n: "Ruined tower chests can hold Black Marble Battle Idols" },
+      { t: "Farm 15 black cores", n: "2-3 infested mines. Bonemass power helps" },
+      { t: "Farm 2 dvergr extractors", n: "Blue crates at dig sites. Kite seekers into the dvergr" },
+      { t: "Farm 30 black marble", n: "10 Black Forge, 20 Eitr Refinery" },
+      { t: "Farm 55 yggdrasil wood", n: "5 forge, 20 extractors, 10 refinery, 20 Galdr. Needs BM axe" },
+      { t: "Farm 35 soft tissue from giant skulls", n: "Iron pickaxe" },
+      { t: "Top up iron to 25 bars from giant remains if short", n: "10 Skoll & Hati, 15 Mistwalker. Skip the swamp, ancient armor drops scrap iron" }
+    ]
+  },
+  {
+    title: "Production chain",
+    items: [
+      { t: "Build Black Forge", n: "10 black marble, 5 ygg wood, 5 black cores", tag: "build" },
+      { t: "Craft Skoll & Hati", n: "4 fine wood, 10 iron, 10 black metal. New melee!", tag: "craft" },
+      { t: "Build 2 sap extractors on glowing roots", n: "10 ygg wood, 5 BM, 1 dvergr extractor each", tag: "build" },
+      { t: "Build Eitr Refinery", n: "20 black marble, 5 BM, 10 ygg wood, 5 cores, 3 sap", tag: "build" },
+      { t: "Collect 38 sap total from extractors", n: "3 for refinery build, 35 for eitr" },
+      { t: "Feed refinery: 35 sap + 35 soft tissue = 35 refined eitr", n: "10 Mistwalker, 5 Galdr, 20 cape. Keep it running nonstop" }
+    ]
+  },
+  {
+    title: "Spend eitr (end goals)",
+    items: [
+      { t: "Craft Mistwalker", n: "3 fine wood, 15 iron, 10 refined eitr, 3 wisps", tag: "craft" },
+      { t: "Build Galdr Table", n: "10 BM, 20 ygg wood, 5 cores, 5 refined eitr. Must be roofed", tag: "build" },
+      { t: "Farm 8 scale hide", n: "Hares, one-shot with frost arrows" },
+      { t: "Craft Feather Cape", n: "10 feathers, 5 scale hide, 20 refined eitr", tag: "craft" },
+      { t: "Farm 16 carapace", n: "Seekers and seeker soldiers" },
+      { t: "Craft Carapace Helmet", n: "16 carapace, 3 scale hide", tag: "craft" }
+    ]
+  }
+];
+
+const KEY = "valheim-grind-v1";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { state = {}; }
+
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+const stepsEl = document.getElementById("steps");
+
+function render() {
+  stepsEl.innerHTML = "";
+  let total = 0, totalDone = 0;
+
+  DATA.forEach((step, si) => {
+    const doneCount = step.items.filter((_, ii) => state[si + "-" + ii]).length;
+    total += step.items.length;
+    totalDone += doneCount;
+    const allDone = doneCount === step.items.length;
+
+    const stepDiv = document.createElement("div");
+    stepDiv.className = "step" + (allDone ? " done" : "");
+    if (state["open-" + si] !== false && !allDone) stepDiv.classList.add("open");
+    if (state["open-" + si] === true) stepDiv.classList.add("open");
+
+    const header = document.createElement("div");
+    header.className = "step-header";
+    header.innerHTML =
+      '<div class="step-num">' + (allDone ? "&#10003;" : (si + 1)) + "</div>" +
+      '<div class="step-title">' + step.title + "</div>" +
+      '<div class="step-count">' + doneCount + " / " + step.items.length + "</div>" +
+      '<div class="chevron">&#9654;</div>';
+    header.onclick = () => {
+      const isOpen = stepDiv.classList.contains("open");
+      state["open-" + si] = !isOpen;
+      save();
+      render();
+    };
+    stepDiv.appendChild(header);
+
+    const body = document.createElement("div");
+    body.className = "step-body";
+
+    step.items.forEach((item, ii) => {
+      const key = si + "-" + ii;
+      const checked = !!state[key];
+      const row = document.createElement("label");
+      row.className = "item" + (checked ? " checked" : "");
+
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = checked;
+      cb.onchange = () => {
+        state[key] = cb.checked;
+        save();
+        render();
+      };
+      row.appendChild(cb);
+
+      const txt = document.createElement("div");
+      let html = '<span class="item-text">' + item.t;
+      if (item.tag) html += '<span class="tag ' + item.tag + '">' + item.tag + "</span>";
+      html += "</span>";
+      if (item.n) html += '<span class="item-note">' + item.n + "</span>";
+      txt.innerHTML = html;
+      row.appendChild(txt);
+
+      body.appendChild(row);
+    });
+
+    stepDiv.appendChild(body);
+    stepsEl.appendChild(stepDiv);
+  });
+
+  document.getElementById("totalCount").textContent = totalDone + " / " + total;
+  document.getElementById("totalFill").style.width = (total ? (totalDone / total) * 100 : 0) + "%";
+}
+
+document.getElementById("resetBtn").onclick = () => {
+  if (confirm("Reset all progress?")) {
+    state = {};
+    save();
+    render();
+  }
+};
+
+render();
+</script>
+</body>
+</html>
