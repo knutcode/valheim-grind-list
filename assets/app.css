@@ -1,0 +1,195 @@
+  :root {
+    --bg: #0d1117;
+    --bg-card: #161d27;
+    --bg-item: #1c2531;
+    --border: #2b3947;
+    --text: #dce6f0;
+    --text-dim: #8a9bb0;
+    --accent: #4fd1c5;
+    --accent-dim: #2c7a73;
+    --gold: #e3b341;
+    --done: #3fb950;
+    --danger: #f85149;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+    padding: 16px;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  header { text-align: center; padding: 24px 0 8px; }
+  h1 {
+    font-size: 1.7rem;
+    letter-spacing: 0.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .subtitle { color: var(--text-dim); font-size: 0.9rem; margin-top: 4px; }
+
+  .total-bar {
+    margin: 20px 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .total-bar .label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    background: var(--bg);
+    border-radius: 6px;
+    height: 12px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+    border-radius: 6px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .step {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .step.done { border-color: var(--done); }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .step-header:hover { background: var(--bg-item); }
+  .step-num {
+    background: var(--accent-dim);
+    color: var(--bg);
+    font-weight: 700;
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .step.done .step-num { background: var(--done); }
+  .step-title { font-weight: 600; flex: 1; }
+  .step-count { color: var(--text-dim); font-size: 0.8rem; white-space: nowrap; }
+  .chevron { color: var(--text-dim); transition: transform 0.2s; font-size: 0.8rem; }
+  .step.open .chevron { transform: rotate(90deg); }
+  .step-body { display: none; border-top: 1px solid var(--border); }
+  .step.open .step-body { display: block; }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: var(--bg-item); }
+  .item input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .item.checked .item-text { text-decoration: line-through; color: var(--text-dim); }
+  .item-text { font-size: 0.92rem; }
+  .item-note { display: block; color: var(--text-dim); font-size: 0.8rem; margin-top: 1px; }
+  .item.checked .item-note { text-decoration: line-through; }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .tag.craft { background: #2d333b; color: var(--gold); }
+  .tag.buy { background: #2d333b; color: #79c0ff; }
+  .tag.boss { background: #3d1d1f; color: var(--danger); }
+  .tag.build { background: #1f3327; color: var(--done); }
+
+  .reset-row { text-align: center; margin: 24px 0 40px; }
+  button.reset {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  button.reset:hover { border-color: var(--danger); color: var(--danger); }
+
+  footer { text-align: center; color: var(--text-dim); font-size: 0.75rem; padding-bottom: 24px; }
+
+  /* --- nav + landing (multi-page) --- */
+  .nav {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 14px;
+  }
+  .nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    transition: all 0.15s;
+  }
+  .nav a:hover { color: var(--text); border-color: var(--accent-dim); }
+  .nav a.active {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+    background: var(--bg-card);
+  }
+
+  .pick { display: grid; gap: 14px; margin: 28px 0; }
+  .pick a {
+    display: block;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 20px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .pick a:hover { border-color: var(--accent-dim); transform: translateY(-2px); }
+  .pick .who {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .pick .goal { color: var(--text-dim); font-size: 0.88rem; margin: 4px 0 12px; }
+  .pick .mini { display: flex; align-items: center; gap: 10px; }
+  .pick .mini .progress-track { flex: 1; height: 8px; }
+  .pick .mini .pct { font-size: 0.78rem; color: var(--text-dim); white-space: nowrap; }

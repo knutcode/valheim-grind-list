@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kage &#183; Valheim Grind List</title>
+<meta name="description" content="Eitr-weave set grind tracker">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x2694;&#xFE0F;</text></svg>">
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<header>
+  <h1>&#x2694;&#xFE0F; Kage's Grind List</h1>
+  <div class="subtitle">Goal: full Eitr-weave set (+ BM axe, root chest, arrows)</div>
+  <nav class="nav">
+    <a href="/knut">Knut</a>
+    <a href="/kage" class="active">Kage</a>
+  </nav>
+</header>
+
+<div class="total-bar">
+  <div class="label"><span>Total progress</span><span id="totalCount">0 / 0</span></div>
+  <div class="progress-track"><div class="progress-fill" id="totalFill"></div></div>
+</div>
+
+<div id="steps"></div>
+
+<div class="reset-row">
+  <button class="reset" id="resetBtn">Reset all progress</button>
+</div>
+
+<footer>Progress is saved in your browser (localStorage)</footer>
+
+<script>window.GRIND_KEY = "valheim-grind-kage-v1";</script>
+<script src="/assets/data-kage.js"></script>
+<script src="/assets/app.js"></script>
+</body>
+</html>
