@@ -1,0 +1,2 @@
+# valheim-grind-list
+test
